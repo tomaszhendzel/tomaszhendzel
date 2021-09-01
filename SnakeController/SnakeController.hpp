@@ -3,6 +3,7 @@
 #include <list>
 #include <memory>
 #include <functional>
+#include <stdexcept>
 
 #include "IEventHandler.hpp"
 #include "SnakeInterface.hpp"
