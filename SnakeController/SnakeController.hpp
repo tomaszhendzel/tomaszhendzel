@@ -23,6 +23,41 @@ struct UnexpectedEventException : std::runtime_error
     UnexpectedEventException();
 };
 
+class Segments
+{
+private:
+    struct Segment
+    {
+        int x;
+        int y;
+    };
+    std::list<Segment> m_segments;
+    //Direction m_currentDirection;
+    //IPort& m_displayPort;
+    //IPort& m_foodPort;
+    //IPort& m_scorePort;
+
+    
+public:
+    /*Segments(/*Direction m_currentDirection/*, IPort& m_displayPort, IPort& m_foodPort, IPort& m_scorePort)
+    :/*m_currentDirection(m_currentDirection)/*,m_displayPort(m_displayPort),m_foodPort(m_foodPort), m_scorePort(m_scorePort)
+    {
+    }*/
+
+    std::pair<int, int> m_mapDimension;
+    std::pair<int, int> m_foodPosition;
+
+    bool isSegmentAtPosition(int x, int y) const;
+    Segment calculateNewHead(Direction m_currentDirection) const;
+    void updateSegmentsIfSuccessfullMove(Segment const& newHead, IPort& m_foodPort, IPort& m_scorePort, IPort& m_displayPort);
+    void addHeadSegment(Segment const& newHead, IPort& m_displayPort);
+    void removeTailSegmentIfNotScored(Segment const& newHead, IPort& m_foodPort, IPort& m_scorePort, IPort& m_displayPort);
+    void removeTailSegment(IPort& m_displayPort);
+    bool isPositionOutsideMap(int x, int y) const;
+    void addSeqment(int x, int y);
+    
+};
+
 class Controller : public IEventHandler
 {
 public:
@@ -38,17 +73,14 @@ private:
     IPort& m_foodPort;
     IPort& m_scorePort;
 
-    std::pair<int, int> m_mapDimension;
-    std::pair<int, int> m_foodPosition;
+    //std::pair<int, int> m_mapDimension;//
+    //std::pair<int, int> m_foodPosition;//
 
-    struct Segment
-    {
-        int x;
-        int y;
-    };
-
-    std::list<Segment> m_segments;
+    
     Direction m_currentDirection;
+    //std::list<Segment> m_segments;
+    Segments m_segments ;/*= Segments(m_currentDirection/*, m_displayPort,m_foodPort, m_scorePort/*, m_mapDimension, m_foodPosition);*/
+    
 
     void handleTimeoutInd();
     void handleDirectionInd(std::unique_ptr<Event>);
@@ -56,15 +88,7 @@ private:
     void handleFoodResp(std::unique_ptr<Event>);
     void handlePauseInd(std::unique_ptr<Event>);
 
-    bool isSegmentAtPosition(int x, int y) const;
-    Segment calculateNewHead() const;
-    void updateSegmentsIfSuccessfullMove(Segment const& newHead);
-    void addHeadSegment(Segment const& newHead);
-    void removeTailSegmentIfNotScored(Segment const& newHead);
-    void removeTailSegment();
-
-    bool isPositionOutsideMap(int x, int y) const;
-
+//World -ponizsze metody powinny zostac ujete w drugiej klasie
     void updateFoodPosition(int x, int y, std::function<void()> clearPolicy);
     void sendClearOldFood();
     void sendPlaceNewFood(int x, int y);
